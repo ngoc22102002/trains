@@ -4,19 +4,25 @@
  */
 package model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author phamn
  */
 public class toa {
     private String ID,name;
+    private int type;
+    private ArrayList<ghe> ghe;
 
     public toa() {
     }
 
-    public toa(String ID, String name) {
+    public toa(String ID, String name, int type, ArrayList<ghe> ghe) {
         this.ID = ID;
         this.name = name;
+        this.type = type;
+        this.ghe = ghe;
     }
 
     public String getID() {
@@ -33,6 +39,22 @@ public class toa {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public ArrayList<ghe> getGhe() {
+        return ghe;
+    }
+
+    public void setGhe(ArrayList<ghe> ghe) {
+        this.ghe = ghe;
     }
     
 }
