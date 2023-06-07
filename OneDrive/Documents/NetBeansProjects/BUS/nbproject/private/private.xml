@@ -17,6 +17,7 @@
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/controller/register.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/controller/dashboard.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/model/user.java</file>
+            <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/model/ve.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/controller/destinations.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/controller/ticketDisplay.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/web/Destinations.jsp</file>
@@ -36,6 +37,7 @@
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/web/Add.jsp</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/filter/admin.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/filter/login.java</file>
+            <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/model/lo_trinh.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/web/StationList.jsp</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/controller/purchaseticket.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/web/TicketDisplay.jsp</file>
@@ -45,6 +47,7 @@
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/model/ga.java</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/web/findticket.jsp</file>
             <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/DAO/DBconect.java</file>
+            <file>file:/C:/Users/phamn/OneDrive/Documents/NetBeansProjects/BUS/src/java/controller/trainsdisplay.java</file>
         </group>
     </open-files>
 </project-private>

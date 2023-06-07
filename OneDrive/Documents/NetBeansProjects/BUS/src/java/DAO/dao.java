@@ -9,6 +9,7 @@ import static java.lang.String.format;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -23,8 +24,12 @@ import model.Stations;
 import model.trains;
 import model.user;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import model.ga;
+import model.lo_trinh;
+import model.tau;
+import model.toa;
 
 /**
  *
@@ -359,60 +364,24 @@ public class dao extends DBconect {
         return isExist;
     }
 
-    public Destination getDestination(String argId) {
-        Destination d = new Destination();
-        String sql = "SELECT * FROM destinations WHERE id = '" + argId + "'";
+    public lo_trinh getLo_Trinh(String ga_from, String ga_to) {
+        lo_trinh d = new lo_trinh();
+        String sql = "SELECT * FROM lo_trinh WHERE ga_from = '" + ga_from + "' and ga_to='" + ga_to + "'";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet result = ps.executeQuery();
 
             if (result.next()) {
-                d.setId(result.getString("id"));
-                d.setStation_from(result.getString("station_from"));
-                d.setStation_to(result.getString("station_to"));
-                d.setTrain_id(result.getString("train_id"));
-                d.setTime(result.getString("time"));
-                d.setStatus(result.getString("status"));
-                d.setFare(result.getString("fare"));
-                d.setLast_activity(result.getString("last_activity"));
-                d.setLast_modify_by(result.getString("last_modify_by"));
+                d.setID(result.getString("ID"));
+                d.setID_tau(result.getString("ID_tau"));
+                d.setGa_from(result.getString("ga_from"));
+                d.setGa_to(result.getString("ga_to"));
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return d;
-    }
-
-    public ArrayList<HashMap<String,String>> FindByUser(String id) {
-        ArrayList<HashMap<String,String>> list = new ArrayList<>();
-        String sql = "SELECT * FROM booking WHERE passenger_id='" + id + "' ORDER BY id DESC";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                HashMap<String,String> a=new HashMap<>();
-                 Booking b = new Booking();
-                 String[] str=rs.getString("destination_id").split(",");
-                 Destination d1=getDestination(str[0]);
-                 Destination d2=getDestination(str[str.length-1]);
-                 Stations s1=getStation(d1.getStation_from());
-                 Stations s2=getStation(d2.getStation_to());
-                 trains tra=getTrains(d1.getTrain_id());
-                 a.put("booking_date", rs.getString("booking_date"));
-                 a.put("journey_date", rs.getString("journey_date"));
-                 a.put("num", rs.getString("seat_numbers"));
-                 a.put("from", s1.getName());
-                 a.put("to", s2.getName());
-                 a.put("name", tra.getName());
-                 a.put("code", tra.getCode());
-                 list.add(a);          
-            }         
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return list;
     }
 
     public void insetBooking(String user_id, String destination_id, String date, String num) {
@@ -433,32 +402,6 @@ public class dao extends DBconect {
             ps.executeQuery();
         } catch (SQLException e) {
         }
-    }
-
-    public Destination stationFrom(String stationFrom, String trainId) {
-        Destination d = null;
-        String queryString = "SELECT * FROM destinations WHERE station_from ='" + stationFrom + "' AND train_id = '" + trainId + "'";
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(queryString);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                d = new Destination();
-                d.setStation_from(result.getString("station_from"));
-                d.setId(result.getString("id"));
-                d.setStation_to(result.getString("station_to"));
-                d.setTrain_id(result.getString("train_id"));
-                d.setTime(result.getString("time"));
-                d.setStatus(result.getString("status"));
-                d.setFare(result.getString("fare"));
-                d.setLast_activity(result.getString("last_activity"));
-                d.setLast_modify_by(result.getString("last_modify_by"));
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return d;
     }
 
     public Destination stationTo(String stationFrom, String trainId) {
@@ -487,100 +430,172 @@ public class dao extends DBconect {
         return d;
     }
 
-    public ArrayList<Integer> getSeat(String destination_id, String journey_date) {
-
-        ArrayList<ArrayList<Integer>> list = new ArrayList<>();
-        ArrayList<Integer> d = new ArrayList<>();
-        String[] a = destination_id.split(",");
-        for (int i = 0; i < a.length; i++) {
-            d.add(Integer.parseInt(a[i]));
-        }
-        Destination xx;
-        // bing.ai
-        while (true) {
-            xx = getDestination(String.valueOf(d.get(0)));
-            Destination de = stationTo(xx.getStation_from(), xx.getTrain_id());
-            if (de == null) {
-                break;
-            } else {
-                d.add(0, Integer.parseInt(de.getId()));
-            }
-        }
-        while (true) {
-            xx = getDestination(String.valueOf(d.get(d.size() - 1)));
-            Destination de = stationFrom(xx.getStation_to(), xx.getTrain_id());
-            if (de == null) {
-                break;
-            } else {
-                d.add(Integer.parseInt(de.getId()));
-            }
-        }
-        for (int i = 0; i < d.size(); i++) {
-            for (int j = 0; j < d.size() - i; j++) {
-                ArrayList<Integer> al = new ArrayList<>();
-                al.add(d.get(j));
-                for (int k = 0; k < i; k++) {
-                    al.add(d.get(j + k + 1));
-                }
-                list.add(al);
-
-            }
-        }
-        for (int i = 0; i < list.size(); i++) {
-            for (int j = 0; j < a.length; j++) {
-                if (list.get(i).contains(Integer.parseInt(a[j]))) {
-                    break;
-                }
-                if (j == a.length - 1) {
-                    list.remove(i);
-                    i--;
-                }
-            }
-        }
-        String sql = "SELECT seat_numbers FROM [booking] where destination_id=? and journey_date=?";
-        ArrayList<Integer> seat = new ArrayList<>();
-
-        for (int i = 0; i < list.size(); i++) {
-            String s = String.valueOf(list.get(i).get(0));
-            for (int j = 1; j < list.get(i).size(); j++) {
-                s += "," + list.get(i).get(j);
-            }
-            try {
-                System.out.println(s);
-                PreparedStatement ps = connection.prepareStatement(sql);
-                ps.setString(1,s);
-                ps.setString(2,journey_date);
-                ResultSet result = ps.executeQuery();
-                while (result.next()) {        
-                    seat.add(Integer.parseInt(result.getString("seat_numbers")));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        return seat;
-    }
-
-    public trains getTrains(String trnId) {
-        trains t = new trains();
-        String sql = "SELECT * FROM trains WHERE id='" + trnId + "'";
+    public toa getToa(String trnId) {
+        toa t = new toa();
+        String sql = "SELECT * FROM toa WHERE ID='" + trnId + "';";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet result = ps.executeQuery();
             while (result.next()) {
+                t.setID(result.getString("ID"));
                 t.setName(result.getString("name"));
-                t.setId(result.getString("id"));
-                t.setCode(result.getString("code"));
-                t.setTotal_seat(result.getString("total_seat"));
-                t.setType(result.getString("type"));
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return t;
+    }
+
+    public ArrayList<toa> getToaa(String trnId) {
+        ArrayList<toa> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM toa_tau WHERE ID_tau='" + trnId + "' ORDER BY stt ASC;";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+                toa toa = getToa(result.getString("ID_toa"));
+                list.add(toa);
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public tau getTau(String trnId,String ga_from,String ga_to) {
+        tau t = new tau();
+        String sql = "SELECT * FROM tau WHERE ID='" + trnId + "'";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+                t.setID(trnId);
+                t.setName(result.getString("name"));
+                t.setToa(getToaa(trnId));
+                t.setGa(getGaa(trnId,ga_from,ga_to));
+                t.setDistance(getDistance(trnId,ga_from,ga_to));
+                t.setTime_go(getTimeGo(trnId, ga_from, ga_to));
+                t.setTime_come(getTimecome(trnId, ga_from, ga_to));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+    public ga getGa(String trnId) {
+        ga t = new ga();
+        String sql = "SELECT * FROM ga WHERE ID='" + trnId + "'";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+                t.setID(trnId);
+                t.setName(result.getString("name"));
+                t.setAdd(result.getString("add"));
+                t.setMap(result.getString("map"));
+
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+    public int getSttGa(String ID_tau, String ID_ga) {
+        String sql = "SELECT * FROM tau_ga WHERE ID_tau='" + ID_tau + "' and ID_ga='" + ID_ga + "'ORDER BY stt ASC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+                return Integer.parseInt(result.getString("stt"));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public ArrayList<ga> getGaa(String trnId, String ga_from, String ga_to) {
+        ArrayList<ga> list = new ArrayList<>();
+        int a = getSttGa(trnId, ga_from);
+        int b = getSttGa(trnId, ga_to);
+        String sql = "SELECT * FROM tau_ga WHERE ID_tau='" + trnId + "'and stt >='" + a + "' and stt<='" + b + "'ORDER BY stt ASC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+                ga ga = getGa(result.getString("ID_ga"));
+                list.add(ga);
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<Integer> getDistance(String trnId, String ga_from, String ga_to) {
+        ArrayList<Integer> list = new ArrayList<>();
+        int a = getSttGa(trnId, ga_from);
+        int b = getSttGa(trnId, ga_to);
+        String sql = "SELECT * FROM tau_ga WHERE ID_tau='" + trnId + "'and stt >='" + a + "' and stt<='" + b + "'ORDER BY stt ASC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+
+                list.add(Integer.parseInt(result.getString("distance")));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<String> getTimecome(String trnId, String ga_from, String ga_to) {
+        ArrayList<String> list = new ArrayList<>();
+        int a = getSttGa(trnId, ga_from);
+        int b = getSttGa(trnId, ga_to);
+        String sql = "SELECT * FROM tau_ga WHERE ID_tau='" + trnId + "'and stt >='" + a + "' and stt<='" + b + "'ORDER BY stt ASC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+
+                list.add(result.getString("time_come"));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<String> getTimeGo(String trnId, String ga_from, String ga_to) {
+        ArrayList<String> list = new ArrayList<>();
+        int a = getSttGa(trnId, ga_from);
+        int b = getSttGa(trnId, ga_to);
+        String sql = "SELECT * FROM tau_ga WHERE ID_tau='" + trnId + "'and stt >='" + a + "' and stt<='" + b + "'ORDER BY stt ASC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery();
+            while (result.next()) {
+
+                list.add(result.getString("time_go"));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public Stations getStation(String staionId) {
@@ -617,8 +632,10 @@ public class dao extends DBconect {
 
     public static void main(String[] args) {
         dao d = new dao();
-        ga g=new ga("5","5", "5", "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.8858464181694!2d108.2067638746842!3d16.071412439380357!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314218495c4839ed%3A0x5c008faec7ffd1c0!2sDa%20Nang%20Railway%20Station!5e0!3m2!1sen!2s!4v1685936713187!5m2!1sen!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>");
-        System.out.println(g.getMap());
-        d.InsertNewStations(g);
+        ArrayList<String> ga = d.getTimecome("SE1", "1", "2");
+        for (int i = 0; i < ga.size(); i++) {
+            System.out.println(ga.get(i));
+        }
+     
     }
 }

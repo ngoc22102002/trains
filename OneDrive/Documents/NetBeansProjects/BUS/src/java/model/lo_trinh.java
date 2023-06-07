@@ -9,14 +9,13 @@ package model;
  * @author phamn
  */
 public class lo_trinh {
-    private String ID,name,ID_tau,ga_from,ga_to;
+    private String ID,ID_tau,ga_from,ga_to;
 
     public lo_trinh() {
     }
 
-    public lo_trinh(String ID, String name, String ID_tau, String ga_from, String ga_to) {
+    public lo_trinh(String ID, String ID_tau, String ga_from, String ga_to) {
         this.ID = ID;
-        this.name = name;
         this.ID_tau = ID_tau;
         this.ga_from = ga_from;
         this.ga_to = ga_to;
@@ -30,13 +29,6 @@ public class lo_trinh {
         this.ID = ID;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getID_tau() {
         return ID_tau;

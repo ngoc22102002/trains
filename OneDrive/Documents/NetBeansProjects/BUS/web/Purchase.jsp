@@ -5,7 +5,7 @@
 <%@taglib  prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="header.jsp" %>
 <div class="signpage">
-    <form class="register_form" style="max-width:400px;" action="ticketdisplay" method="post">
+    <form class="register_form" style="max-width:400px;" action="trainsdisplay" method="post">
         <div class="rs_form_box">
             <h3 class="form_section_title">
                 PURCHASE TICKET
