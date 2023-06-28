@@ -60,10 +60,9 @@ public class login extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         HttpSession session=request.getSession();
-        if(session.getAttribute("acc")!=null){
-            
+        if(session.getAttribute("acc")!=null) { 
             response.sendRedirect("dashboard");
-        }else{
+        } else {
             request.getRequestDispatcher("Login.jsp").forward(request, response);
         }
         
@@ -84,15 +83,15 @@ public class login extends HttpServlet {
         String Password=request.getParameter("password");
         dao dao=new dao();
         user u=dao.doLogin(phone, Password);
-        if(u==null){
+        if (u==null) {
                 request.setAttribute("message", "Incorrect account or password");
                 request.getRequestDispatcher("Login.jsp").forward(request, response);
-        }else{         
+        } else {         
             HttpSession session=request.getSession();
             session.setAttribute("acc", u);
-            if(session.getAttribute("currentUrl")!=null){
+            if(session.getAttribute("currentUrl")!=null) {
                 response.sendRedirect(session.getAttribute("currentUrl").toString());
-            }else{
+            } else {
 //                response.sendRedirect("dashboard");
             }
             
